@@ -2,7 +2,7 @@
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
-from keras.datasets.data_utils import get_file
+from keras.utils.data_utils import get_file
 import numpy as np
 import random, sys
 
