@@ -60,25 +60,26 @@ model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 
 # helper function to sample an index from a probability array
 def sample(a, temperature=1.0):
-    a = np.log(a)/temperature
+    # a = np.log(a)/temperature
     a = np.exp(a)/np.sum(np.exp(a))
+    # print a
+    # print np.sum(a), ' ', np.sum(a[:-1])
     return np.argmax(np.random.multinomial(1,a,1))
 
 # train the model, output generated text after each iteration
-for iteration in range(1, 80):
+for iteration in range(1, 200):
     print '-' * 50
     print 'Iteration', iteration
-    model.fit(X, y, batch_size=128, nb_epoch=1)
+    model.fit(X, y, batch_size=128, nb_epoch=10)
 
     start_index = random.randint(0, len(text) - maxlen - 1)
 
-    for diversity in [0.2, 0.5,0.8, 1.0,1.1, 1.2, 1.5]:
+    for diversity in [1.0]:
         print '----- diversity:', diversity
 
         generated = ''
         sentence = text[start_index : start_index + maxlen]
-        generated += sentence
-        print '----- Generating with seed: "' + sentence + '"'
+        print '----- Generating with seed: "' + sentence.encode('utf-8') + '"'
 
         for iteration in range(120):
             x = np.zeros((1, maxlen, len(chars)))
@@ -92,4 +93,5 @@ for iteration in range(1, 80):
             generated += next_char
             sentence = sentence[1:] + next_char
 
-        print generated
+	print "auto generated:"
+        print generated.encode('utf-8')
