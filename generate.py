@@ -7,7 +7,7 @@ import numpy as np
 import random, sys
 
 
-path = './poetryFromTang.txt'
+path = './data.txt'
 print 'opening txt'
 text = open(path).read().lower().decode('utf-8')
 print 'corpus length:', len(text)
@@ -49,9 +49,9 @@ model = Sequential()
 #######################
 
 
-model.add(LSTM(512,return_sequences = True, input_shape=(maxlen,len(chars))))
+model.add(LSTM(100,return_sequences = True, input_shape=(maxlen,len(chars))))
 model.add(Dropout(0.2))
-model.add(LSTM(512, return_sequences=False))
+model.add(LSTM(100, return_sequences=False))
 model.add(Dropout(0.2))
 model.add(Dense(len(chars)))
 model.add(Activation('softmax'))
@@ -61,16 +61,26 @@ model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 # helper function to sample an index from a probability array
 def sample(a, temperature=1.0):
     # a = np.log(a)/temperature
-    a = np.exp(a)/np.sum(np.exp(a))
+    # a = np.exp(a)/np.sum(np.exp(a))
+    a = a / np.sum(a)
     # print a
     # print np.sum(a), ' ', np.sum(a[:-1])
-    return np.argmax(np.random.multinomial(1,a,1))
+    # return np.argmax(np.random.multinomial(1,a,1))
+    return np.argmax(a)
+
+def to_word(predict, vocabs):
+    t = np.cumsum(predict)
+    s = np.sum(predict)
+    sample = int(np.searchsorted(t, np.random.rand(1) * s))
+    if sample > len(vocabs):
+        sample = len(vocabs) - 1
+    return sample 
 
 # train the model, output generated text after each iteration
 for iteration in range(1, 200):
     print '-' * 50
     print 'Iteration', iteration
-    model.fit(X, y, batch_size=128, nb_epoch=10)
+    model.fit(X, y, batch_size=128, nb_epoch=1)
 
     start_index = random.randint(0, len(text) - maxlen - 1)
 
@@ -87,7 +97,7 @@ for iteration in range(1, 200):
                 x[0, t, char_indices[char]] = 1.
 
             preds = model.predict(x, verbose=0)[0]
-            next_index = sample(preds, diversity)
+            next_index = to_word(preds, indices_char)
             next_char = indices_char[next_index]
 
             generated += next_char
