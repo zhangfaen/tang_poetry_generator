@@ -6,9 +6,9 @@ from keras.utils.data_utils import get_file
 import numpy as np
 import random, sys
 
-
 path = './data.txt'
 print 'opening txt'
+
 text = open(path).read().lower().decode('utf-8')
 print 'corpus length:', len(text)
 
@@ -77,7 +77,7 @@ def to_word(predict, vocabs):
     return sample 
 
 # train the model, output generated text after each iteration
-for iteration in range(1, 200):
+for iteration in range(1, 444400):
     print '-' * 50
     print 'Iteration', iteration
     model.fit(X, y, batch_size=128, nb_epoch=1)
@@ -105,3 +105,5 @@ for iteration in range(1, 200):
 
 	print "auto generated:"
         print generated.encode('utf-8')
+
+
