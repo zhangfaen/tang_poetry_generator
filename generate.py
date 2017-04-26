@@ -77,7 +77,7 @@ def to_word(predict, vocabs):
     return sample 
 
 # train the model, output generated text after each iteration
-for iteration in range(1, 444400):
+for iteration in range(1, 1):
     print '-' * 50
     print 'Iteration', iteration
     model.fit(X, y, batch_size=128, nb_epoch=1)
@@ -106,4 +106,8 @@ for iteration in range(1, 444400):
 	print "auto generated:"
         print generated.encode('utf-8')
 
-
+json_string = model.to_json()
+model_file = open('model.json', 'w')
+model_file.write(json_string)
+model_file.close()
+model.save('model_weights.h5')
